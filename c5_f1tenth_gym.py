@@ -288,6 +288,11 @@ def main() -> None:
         horizon=8,
         dt=control_dt,
         max_speed=8.0,
+        # Final C6 configuration: heading_2x.
+        q=(4.0, 4.0, 1.0, 4.0),
+        q_terminal=(8.0, 8.0, 2.0, 8.0),
+        r=(0.1, 0.2),
+        r_delta=(0.1, 1.0),
     )
     controller = IterativeLinearMPC(mpc_config, arguments.wheelbase)
     env = make_environment(gym_config, config_path, physics_dt)
