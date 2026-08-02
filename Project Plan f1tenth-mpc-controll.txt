@@ -1,0 +1,163 @@
+ # Project Plan: f1tenth-mpc-controller
+
+  ## The Goal in One Sentence
+
+  Build a Model Predictive Controller that drives an F1TENTH-scale car around a track, beating a tuned Pure Pursuit baseline, with full math derivation and
+  a side-by-side demo video.
+
+  ———
+
+  ## How the Project Is Chunked (Big Picture)
+
+  Chunk A — Dynamics + Forward Sim        [Days 1-2]   "I can simulate a car"
+  Chunk B — Pure Pursuit Baseline         [Days 3-4]   "I have something to beat"
+  Chunk C — MPC Controller                [Days 5-9]   "I beat the baseline"
+  Chunk D — Comparison + Writeup + Video  [Days 10-12] "It's portfolio-ready"
+
+  Each chunk has sub-bits below. Don't move to the next chunk until the "done when" line is true.
+
+  ———
+
+  ## Chunk A — Dynamics + Forward Sim (Days 1–2)
+
+  What you're building: A Python simulation of a car that takes steering + throttle and produces a trajectory.
+
+   Sub-bit    What you do                                                             "Done when..."
+  ━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   A1         Read about the kinematic bicycle model (KBM). Watch 1 video, read 1     You can write the 3 equations from memory: x_dot, y_dot, psi_dot,
+              short blog.                                                             v_dot.
+  ─────────  ──────────────────────────────────────────────────────────────────────  ───────────────────────────────────────────────────────────────────────
+   A2         Write dynamics.py: a step(state, control, dt) function.                 You can call it 100 times in a loop and get a trajectory.
+  ─────────  ──────────────────────────────────────────────────────────────────────  ───────────────────────────────────────────────────────────────────────
+   A3         Write a forward sim script: fix controls, plot the resulting path       You see a recognizable car-like curve (straight line, circle, etc.).
+              with matplotlib.
+  ─────────  ──────────────────────────────────────────────────────────────────────  ───────────────────────────────────────────────────────────────────────
+   A4         Sanity-check: drive in a circle at constant steering, verify radius     You trust your model.
+              matches L/tan(δ).
+
+  New concepts for you to study: Kinematic bicycle model, discretization (Euler integration).
+
+  ———
+
+  ## Chunk B — Pure Pursuit + PID Baseline (Days 3–4)
+
+  What you're building: A classical path-tracking controller that completes a lap in F1TENTH Gym.
+
+   Sub-bit    What you do                                                         "Done when..."
+  ━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   B1         Read the Pure Pursuit algorithm (it's just 5 lines of math).        You can explain why δ = atan2(2L·sin(α), ld) works.
+  ─────────  ──────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────
+   B2         Install F1TENTH Gym, run the gap-follow example.                    The car drives forward in sim.
+  ─────────  ──────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────
+   B3         Write path_loader.py: load the .csv centerline from a track map.    You can plot the reference line in matplotlib.
+  ─────────  ──────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────
+   B4         Write Pure Pursuit + PID for longitudinal velocity.                 The car completes a lap without crashing.
+  ─────────  ──────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────
+   B5         Log telemetry (state, controls, error) to CSV.                      You have a file you can plot later.
+
+  New concepts for you to study: Pure Pursuit, lookahead distance tuning, PID (you know this already).
+
+  ———
+
+  ## Chunk C — MPC Controller (Days 5–9)
+
+  This is the meaty chunk. Sub-bits ordered by dependency:
+
+   Sub-bit    What you do                                                                   "Done when..."
+  ━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   C1         Pick ONE reference F1TENTH MPC repo on GitHub and read it line-by-line.       You can explain every line of that repo to someone.
+              Don't code yet, just read.
+  ─────────  ────────────────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────────────────
+   C2         Derive the linearized KBM on paper: compute A(ψ_op) and B(ψ_op) Jacobians     You have a LaTeX/PDF doc with the derivation.
+              at an operating point.
+  ─────────  ────────────────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────────────────
+   C3         Formulate the QP in cvxpy: cost J = Σ (x-x_ref)ᵀQ(x-x_ref) + uᵀRu,            cvxpy solves the QP in <50 ms (offline is fine for now).
+              dynamics as equality constraints, input bounds as inequality.
+  ─────────  ────────────────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────────────────
+   C4         Run the MPC in a forward sim (your own, not F1TENTH yet). Verify it tracks    It tracks better than Pure Pursuit in pure sim.
+              a straight line, then a curve.
+  ─────────  ────────────────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────────────────
+   C5         Plug into F1TENTH Gym as the controller. Run closed-loop.                     Car completes a lap. Probably worse than baseline at first.
+  ─────────  ────────────────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────────────────
+   C6         Tune Q and R matrices using a small sweep. Log results.                       MPC is faster or smoother than Pure Pursuit on lap time + RMSE.
+  ─────────  ────────────────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────────────────
+   C7         (Optional) Profile solve time. Swap cvxpy → OSQP if you finish early.         Solve time < 5 ms (only if you have time).
+
+  New concepts for you to study (in this order):
+
+  1. What is a QP? (Boyd, 1 hour skim)
+  2. Linearization of nonlinear dynamics (Jacobian) — likely familiar from the balancing robot
+  3. Receding horizon / model predictive control (Borrelli textbook ch. 12, or any 20-min YouTube)
+  4. cvxpy syntax (their "Getting Started" page)
+  5. How to linearize-at-each-step (the standard MPC trick — re-linearize around current state, not a fixed operating point)
+
+  ———
+
+  ## Chunk D — Comparison + Writeup + Video (Days 10–12)
+
+   Sub-bit    What you do                                                                       "Done when..."
+  ━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   D1         Run MPC and Pure Pursuit on the same track with identical start.                  You have two CSVs of telemetry.
+  ─────────  ────────────────────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────────────
+   D2         Plot: trajectory overlay, tracking error vs time, control inputs vs time,         You have 4 plots that tell the story.
+              solve-time histogram.
+  ─────────  ────────────────────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────────────
+   D3         Record a side-by-side demo video (MPC vs PP on 2-3 tracks).                       You have an MP4 + GIF.
+  ─────────  ────────────────────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────────────
+   D4         Write the README: hero GIF, problem, model, results table, how to run.            Someone can clone and reproduce your results in 10 minutes.
+  ─────────  ────────────────────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────────────
+   D5         Write docs/derivation.md with the full math.                                      The math is documented, not just in code.
+  ─────────  ────────────────────────────────────────────────────────────────────────────────  ─────────────────────────────────────────────────────────────
+   D6         Add a "Limitations" section (e.g., "kinematic model fails at slip angles >        It reads as honest engineering, not a homework dump.
+              8°").
+
+  ———
+
+  ## Study Roadmap (What to Read, In Order)
+
+  Read each resource right before you need it — don't pre-study everything.
+
+   When         Read                                                                                                     Time
+  ━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━
+   Before A1    "Kinematic Bicycle Model" — any of: Coursera Self-Driving Cars (Lesson 4), or the F1TENTH Gym README.    1-2 hr
+  ───────────  ───────────────────────────────────────────────────────────────────────────────────────────────────────  ────────
+   Before B1    "Pure Pursuit" — the original paper (Coulter 1992, 6 pages) or this Medium explainer.                    1 hr
+  ───────────  ───────────────────────────────────────────────────────────────────────────────────────────────────────  ────────
+   Before C1    Skim Boyd "Convex Optimization" chapters 1-2 (PDF free). Don't memorize.                                 2 hr
+  ───────────  ───────────────────────────────────────────────────────────────────────────────────────────────────────  ────────
+   Before C2    "Linearization for control" — any undergrad lecture notes. You probably know most of this.               1 hr
+  ───────────  ───────────────────────────────────────────────────────────────────────────────────────────────────────  ────────
+   Before C3    Borrelli MPC textbook, chapter 12 (PDF free). Read sections 12.1-12.3.                                   3-4 hr
+  ───────────  ───────────────────────────────────────────────────────────────────────────────────────────────────────  ────────
+   Before C3    cvxpy "Getting Started" + "Parameters" pages.                                                            1 hr
+  ───────────  ───────────────────────────────────────────────────────────────────────────────────────────────────────  ────────
+   Before C5    F1TENTH Gym README + the autonomy stack's MPC example (if they have one).                                1 hr
+
+  Total study time: ~12 hours spread across 2 weeks.
+
+  ———
+
+  ## Reference Implementations to Choose From (Pick ONE for C1)
+
+  Search GitHub for f1tenth mpc. Pick whichever has:
+
+  - Clean README
+  - < 200 lines of core controller code
+  - Uses cvxpy or OSQP (not CasADi, not ACADO)
+  - Tested on F1TENTH Gym
+
+  You'll read it, understand it, then write your own. Do not copy-paste.
+
+  ———
+
+  ## The Skip List (Reaffirmed)
+
+  To finish in 2 weeks, you are not doing:
+
+  - Dynamic bicycle model with tire slip — kinematic is enough
+  - Nonlinear MPC — linearize is enough
+  - ROS2 deployment — run as a Python script
+  - Real hardware — defer to "Future Work" in README
+  - Obstacle avoidance v1 — pure tracking first; obstacles only if you finish early
+  - C++ port — Python is fine
+  - Robust MPC / tube MPC — stretch goal only
