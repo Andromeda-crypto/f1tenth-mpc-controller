@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from dynamics import step, WHEELBASE
+from f1tenth_mpc.dynamics import step, WHEELBASE
 
 def run_simulation(initial_state, controls, dt, steps):
     """

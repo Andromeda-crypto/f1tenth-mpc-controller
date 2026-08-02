@@ -21,7 +21,7 @@ import yaml
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from c5_f1tenth_gym import (
+from experiments.c5_f1tenth_gym import (
     ContinuousYaw,
     collision_detected,
     find_default_config,
@@ -32,8 +32,8 @@ from c5_f1tenth_gym import (
     reset_environment,
     step_environment,
 )
-from c6_tuning_sweep import TuneCase, is_valid, run_case
-from pure_pursuit import PurePursuitController
+from experiments.c6_tuning_sweep import TuneCase, is_valid, run_case
+from f1tenth_mpc.pure_pursuit import PurePursuitController
 
 
 FINAL_MPC = TuneCase(
@@ -283,7 +283,7 @@ def main() -> None:
         print_row(row)
 
     rows = [mpc_row, *pp_rows]
-    results_directory = Path(__file__).resolve().parent / "c6_results"
+    results_directory = Path(__file__).resolve().parents[1] / "results" / "c6"
     summary_path = results_directory / "c6_controller_comparison.csv"
     plot_path = results_directory / "c6_controller_comparison.png"
     write_summary(summary_path, rows)

@@ -3,7 +3,7 @@
 Keep this file beside ``mpc_qp.py`` and ``c4_forward_sim.py`` and run it from
 the repository root:
 
-    python c5_f1tenth_gym.py
+    python -m experiments.c5_f1tenth_gym
 
 MPC state: z = [x, y, v, psi]
 MPC input: u = [acceleration, steering_angle]
@@ -21,8 +21,8 @@ from statistics import median
 import numpy as np
 import yaml
 
-from c4_forward_sim import IterativeLinearMPC, wrap_angle
-from mpc_qp import MPCConfig
+from experiments.c4_forward_sim import IterativeLinearMPC, wrap_angle
+from f1tenth_mpc.mpc_qp import MPCConfig
 
 SCRIPT_REVISION = "C5 geometric-heading fix v2"
 
@@ -96,7 +96,7 @@ def _resolve_from_config(config_path: Path, value: str) -> Path:
 
 def find_default_config() -> Path:
     candidates = (
-        Path("config_example_map.yaml"),
+        Path("configs/config_example_map.yaml"),
         Path("f1tenth_gym/examples/config_example_map.yaml"),
         Path("../f1tenth_gym/examples/config_example_map.yaml"),
     )
@@ -374,7 +374,7 @@ def main() -> None:
         if callable(close):
             close()
 
-    telemetry_path = Path(__file__).resolve().parent / "c5_telemetry.csv"
+    telemetry_path = Path(__file__).resolve().parents[1] / "results" / "c5" / "c5_telemetry.csv"
     write_telemetry(telemetry_path, telemetry)
 
     if not telemetry:

@@ -2,7 +2,7 @@
 
 Run from this directory with:
 
-    python c4_forward_sim.py
+    python -m experiments.c4_forward_sim
 
 State order: z = [x, y, v, psi]
 Input order: u = [acceleration, steering_angle]
@@ -17,7 +17,7 @@ from statistics import median
 
 import numpy as np
 
-from mpc_qp import MPCConfig, LinearMPCQP, linearize_discrete_kbm
+from f1tenth_mpc.mpc_qp import MPCConfig, LinearMPCQP, linearize_discrete_kbm
 
 
 def wrap_angle(angle: np.ndarray | float) -> np.ndarray | float:
@@ -514,7 +514,7 @@ def main() -> None:
         if item["progress_m"] <= 10.0:
             raise AssertionError(f"{item['controller']} {item['path']}: insufficient forward progress")
 
-    output_dir = Path(__file__).resolve().parent / "c4_results"
+    output_dir = Path(__file__).resolve().parents[1] / "results" / "c4"
     write_csvs(output_dir, paths, results, metrics)
     write_plots(output_dir, paths, results)
     print_metrics(metrics)

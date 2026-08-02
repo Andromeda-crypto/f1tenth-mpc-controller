@@ -59,19 +59,18 @@ The MPC completed the lap without solver failures, but this CVXPY implementation
 
 | Path | Purpose |
 |---|---|
-| `dynamics.py`, `forward_sim.py` | Initial kinematic-model and forward-simulation validation |
-| `C2_KBM_Linearization.pdf` | Derivation of the affine discrete-time model |
-| `mpc_qp.py` | Parameterized constrained MPC quadratic program |
-| `test_mpc_qp.py` | Linearization, constraint, residual, and solver checks |
-| `c4_forward_sim.py` | Closed-loop nonlinear simulation with an offline baseline |
-| `c4_results/` | C4 telemetry, summaries, and plots |
-| `path_loader.py` | Raceline loading and inspection |
-| `pure_pursuit.py` | Pure Pursuit steering controller |
-| `longitudinal_pid.py` | Longitudinal speed controller used in the earlier baseline bring-up |
-| `c5_f1tenth_gym.py` | Final MPC lap in F1TENTH Gym with telemetry |
-| `c6_tuning_sweep.py` | Eight-case MPC cost-weight sweep |
-| `c6_controller_comparison.py` | Selected MPC versus six Pure Pursuit lookaheads |
-| `c6_results/` | C6 comparison CSV files and plots |
+| `f1tenth_mpc/` | Reusable vehicle models, MPC formulation, path loading, PID, and Pure Pursuit code |
+| `experiments/` | Executable C4, C5, C6, and baseline experiments |
+| `tests/` | MPC linearization, constraint, residual, and solver validation |
+| `configs/` | F1TENTH Gym configuration files |
+| `data/maps/` | Example map image and metadata |
+| `data/waypoints/` | Example raceline and speed profile |
+| `docs/` | Mathematical derivations and project plan |
+| `results/baseline/` | Initial Pure Pursuit evidence |
+| `results/c4/` | Nonlinear forward-simulation results |
+| `results/c5/` | F1TENTH Gym MPC telemetry |
+| `results/c6/` | MPC tuning and controller-comparison results |
+| `requirements.txt` | Pinned dependencies from the validated environment |
 
 ## Setup
 
@@ -101,31 +100,31 @@ The local `.gym_env/` directory is ignored by Git. The included map configuratio
 Run the QP checks:
 
 ```bash
-python test_mpc_qp.py
+python -m tests.test_mpc_qp
 ```
 
 Run the standalone nonlinear forward simulation:
 
 ```bash
-python c4_forward_sim.py
+python -m experiments.c4_forward_sim
 ```
 
 Run the final MPC lap in F1TENTH Gym without opening the renderer:
 
 ```bash
-python c5_f1tenth_gym.py --no-render
+python -m experiments.c5_f1tenth_gym --no-render
 ```
 
 Reproduce the MPC weight sweep:
 
 ```bash
-python c6_tuning_sweep.py
+python -m experiments.c6_tuning_sweep
 ```
 
 Reproduce the fair controller comparison:
 
 ```bash
-python c6_controller_comparison.py
+python -m experiments.c6_controller_comparison
 ```
 
 The C6 scripts overwrite their summary CSV and plot outputs when rerun. The published table reports one deterministic lap per configuration; repeated trials under controlled CPU load are still needed for statistical timing claims.

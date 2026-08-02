@@ -2,7 +2,7 @@
 
 Run from the repository root with the Python environment used for C5:
 
-    python c6_tuning_sweep.py
+    python -m experiments.c6_tuning_sweep
 
 The sweep changes only Q, Qf, R, and Rd. Vehicle limits, model horizon,
 reference speed, simulator timestep, initial pose, and lap gate remain fixed.
@@ -23,8 +23,8 @@ import yaml
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from c4_forward_sim import IterativeLinearMPC
-from c5_f1tenth_gym import (
+from experiments.c4_forward_sim import IterativeLinearMPC
+from experiments.c5_f1tenth_gym import (
     ContinuousYaw,
     collision_detected,
     find_default_config,
@@ -35,7 +35,7 @@ from c5_f1tenth_gym import (
     reset_environment,
     step_environment,
 )
-from mpc_qp import MPCConfig
+from f1tenth_mpc.mpc_qp import MPCConfig
 
 
 @dataclass(frozen=True)
@@ -329,7 +329,7 @@ def main() -> None:
         rows.append(row)
         print_row(row)
 
-    results_directory = Path(__file__).resolve().parent / "c6_results"
+    results_directory = Path(__file__).resolve().parents[1] / "results" / "c6"
     summary_path = results_directory / "c6_tuning_summary.csv"
     plot_path = results_directory / "c6_tracking_vs_smoothness.png"
     write_summary(summary_path, rows)

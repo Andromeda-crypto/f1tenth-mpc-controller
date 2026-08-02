@@ -6,7 +6,7 @@ from statistics import median
 
 import numpy as np
 
-from mpc_qp import MPCConfig, LinearMPCQP, linearize_discrete_kbm
+from f1tenth_mpc.mpc_qp import MPCConfig, LinearMPCQP, linearize_discrete_kbm
 
 
 def nonlinear_step(z: np.ndarray, u: np.ndarray, dt: float, wheelbase: float) -> np.ndarray:

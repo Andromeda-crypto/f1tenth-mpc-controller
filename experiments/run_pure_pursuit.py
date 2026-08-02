@@ -10,9 +10,9 @@ import yaml
 
 from f110_gym.envs.base_classes import Integrator
 
-from longitudinal_pid import LongitudinalPID
-from path_loader import load_path
-from pure_pursuit import PurePursuitController
+from f1tenth_mpc.longitudinal_pid import LongitudinalPID
+from f1tenth_mpc.path_loader import load_path
+from f1tenth_mpc.pure_pursuit import PurePursuitController
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
