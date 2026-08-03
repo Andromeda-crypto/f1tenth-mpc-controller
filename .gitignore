@@ -53,3 +53,5 @@ results/telemetry/
 
 # dependency 
 f1tenth_gym
+# Local map and waypoint data
+/data/
