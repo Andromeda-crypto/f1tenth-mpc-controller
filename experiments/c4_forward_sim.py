@@ -2,7 +2,7 @@
 
 Run from this directory with:
 
-    python -m experiments.c4_forward_sim
+    python c4_forward_sim.py
 
 State order: z = [x, y, v, psi]
 Input order: u = [acceleration, steering_angle]
@@ -18,7 +18,6 @@ from statistics import median
 import numpy as np
 
 from f1tenth_mpc.mpc_qp import MPCConfig, LinearMPCQP, linearize_discrete_kbm
-
 
 def wrap_angle(angle: np.ndarray | float) -> np.ndarray | float:
     """Wrap angle(s) to [-pi, pi)."""
@@ -143,12 +142,20 @@ class IterativeLinearMPC:
         *,
         max_iterations: int = 3,
         convergence_tolerance: float = 1e-2,
+        solver_backend: str = "cvxpy",
     ) -> None:
         self.config = config
         self.wheelbase = wheelbase
         self.max_iterations = max_iterations
         self.convergence_tolerance = convergence_tolerance
-        self.qp = LinearMPCQP(config)
+        if solver_backend == "cvxpy":
+            self.qp = LinearMPCQP(config)
+        elif solver_backend == "native":
+            from f1tenth_mpc.native_osqp_mpc import NativeOSQPLinearMPCQP
+            self.qp = NativeOSQPLinearMPCQP(config)
+        else:
+            raise ValueError("solver_backend must be 'cvxpy' or 'native'")
+        self.solver_backend = solver_backend
         self.control_guess = np.zeros((2, config.horizon))
         self.previous_applied_control = np.zeros(2)
 
@@ -189,7 +196,7 @@ class IterativeLinearMPC:
                 b_seq,
                 c_seq,
                 u_previous=self.previous_applied_control,
-                reuse_solver_cache=False,
+                    reuse_solver_cache=self.solver_backend == "native",
             )
             total_wall_time_ms += result.wall_time_ms
             change = float(np.max(np.abs(result.controls - controls)))
@@ -514,7 +521,7 @@ def main() -> None:
         if item["progress_m"] <= 10.0:
             raise AssertionError(f"{item['controller']} {item['path']}: insufficient forward progress")
 
-    output_dir = Path(__file__).resolve().parents[1] / "results" / "c4"
+    output_dir = Path(__file__).resolve().parent / "c4_results"
     write_csvs(output_dir, paths, results, metrics)
     write_plots(output_dir, paths, results)
     print_metrics(metrics)

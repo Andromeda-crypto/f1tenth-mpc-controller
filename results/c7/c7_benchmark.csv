@@ -1,0 +1,2 @@
+max_control_difference,max_state_difference,relative_objective_difference,median_native_qp_ms,max_native_qp_ms,median_native_controller_ms,max_native_controller_ms,controller_deadline_misses_100ms
+3.033408862385123e-05,1.8404261120041898e-05,4.2160650802008964e-06,0.14769999999941774,0.2204999999992907,0.3043999999996494,0.35069999999937096,0

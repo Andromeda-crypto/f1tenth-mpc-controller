@@ -24,7 +24,7 @@ import yaml
 from experiments.c4_forward_sim import IterativeLinearMPC, wrap_angle
 from f1tenth_mpc.mpc_qp import MPCConfig
 
-SCRIPT_REVISION = "C5 geometric-heading fix v2"
+SCRIPT_REVISION = "C7 persistent native OSQP"
 
 
 @dataclass(frozen=True)
@@ -267,6 +267,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--no-render", action="store_true", help="disable the Gym window")
     parser.add_argument("--max-time", type=float, default=60.0, help="maximum simulated seconds")
     parser.add_argument("--wheelbase", type=float, default=0.3302)
+    parser.add_argument("--solver", choices=("native", "cvxpy"), default="native")
     return parser.parse_args()
 
 
@@ -288,13 +289,10 @@ def main() -> None:
         horizon=8,
         dt=control_dt,
         max_speed=8.0,
-        # Final C6 configuration: heading_2x.
-        q=(4.0, 4.0, 1.0, 4.0),
-        q_terminal=(8.0, 8.0, 2.0, 8.0),
-        r=(0.1, 0.2),
-        r_delta=(0.1, 1.0),
     )
-    controller = IterativeLinearMPC(mpc_config, arguments.wheelbase)
+    controller = IterativeLinearMPC(
+        mpc_config, arguments.wheelbase, solver_backend=arguments.solver
+    )
     env = make_environment(gym_config, config_path, physics_dt)
 
     initial_pose = np.array(
@@ -375,6 +373,7 @@ def main() -> None:
             close()
 
     telemetry_path = Path(__file__).resolve().parents[1] / "results" / "c5" / "c5_telemetry.csv"
+    telemetry_path.parent.mkdir(parents=True, exist_ok=True)
     write_telemetry(telemetry_path, telemetry)
 
     if not telemetry:
@@ -394,12 +393,16 @@ def main() -> None:
     print(f"heading RMSE: {np.rad2deg(np.sqrt(np.mean(heading_values**2))):.3f} deg")
     print(f"steering total variation: {np.sum(np.abs(steering_change)):.4f} rad")
     print(f"median MPC update: {median(update_times):.3f} ms")
+    deadline_misses = sum(value > control_dt * 1000.0 for value in update_times)
+    print(f"100 ms deadline misses: {deadline_misses}/{len(update_times)}")
     print(f"telemetry: {telemetry_path}")
 
     if collided:
         raise AssertionError("C5 failed: the vehicle collided")
     if not completed:
         raise AssertionError("C5 incomplete: no lap within the maximum simulated time")
+    if arguments.solver == "native" and deadline_misses:
+        raise AssertionError("C7 failed: native controller missed the 100 ms deadline")
     print("C5 validation passed")
 
 

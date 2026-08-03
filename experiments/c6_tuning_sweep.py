@@ -1,9 +1,5 @@
 """C6: tune MPC cost weights on the F1TENTH Gym example track.
 
-Run from the repository root with the Python environment used for C5:
-
-    python -m experiments.c6_tuning_sweep
-
 The sweep changes only Q, Qf, R, and Rd. Vehicle limits, model horizon,
 reference speed, simulator timestep, initial pose, and lap gate remain fixed.
 """
