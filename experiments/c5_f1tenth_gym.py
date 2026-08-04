@@ -1,10 +1,4 @@
 """C5: run the linear time-varying MPC controller in F1TENTH Gym.
-
-Keep this file beside ``mpc_qp.py`` and ``c4_forward_sim.py`` and run it from
-the repository root:
-
-    python -m experiments.c5_f1tenth_gym
-
 MPC state: z = [x, y, v, psi]
 MPC input: u = [acceleration, steering_angle]
 Gym action: [steering_angle, desired_speed]
@@ -22,9 +16,10 @@ import numpy as np
 import yaml
 
 from experiments.c4_forward_sim import IterativeLinearMPC, wrap_angle
+from experiments.track_validation import select_reference
 from f1tenth_mpc.mpc_qp import MPCConfig
 
-SCRIPT_REVISION = "C7 persistent native OSQP"
+SCRIPT_REVISION = "C7 persistent native OSQP + validated track reference"
 
 
 @dataclass(frozen=True)
@@ -122,50 +117,21 @@ def load_track(config: dict, config_path: Path, waypoint_override: str | None) -
     if data.ndim != 2 or data.shape[0] < 3:
         raise ValueError(f"waypoint file has an invalid shape: {data.shape}")
 
-    s_index = int(config.get("wpt_sind", 0))
-    x_index = int(config.get("wpt_xind", 1))
-    y_index = int(config.get("wpt_yind", 2))
-    yaw_index = int(config.get("wpt_psiind", config.get("wpt_thind", 3)))
-    speed_index = int(config.get("wpt_vind", 5))
-
-    s = np.asarray(data[:, s_index], dtype=float)
-    x = np.asarray(data[:, x_index], dtype=float)
-    y = np.asarray(data[:, y_index], dtype=float)
-    speed = np.asarray(data[:, speed_index], dtype=float)
-    raw_yaw = np.unwrap(np.asarray(data[:, yaw_index], dtype=float))
-
-    s = s - s[0]
-    if np.any(np.diff(s) <= 0.0):
-        s = np.r_[0.0, np.cumsum(np.hypot(np.diff(x), np.diff(y)))]
-    if s[-1] <= 0.0:
-        raise ValueError("waypoint path length must be positive")
-
-    # Raceline CSVs are not consistent about their heading convention.  In the
-    # official example, psi is rotated by roughly 90 degrees from the Gym's
-    # world-frame vehicle yaw.  The path tangent is convention-independent and
-    # is the heading that a path-tracking controller should follow.
-    tangent_x = np.gradient(x, s, edge_order=2)
-    tangent_y = np.gradient(y, s, edge_order=2)
-    yaw = np.unwrap(np.arctan2(tangent_y, tangent_x))
-    yaw_offset = float(
-        np.arctan2(
-            np.mean(np.sin(yaw - raw_yaw)),
-            np.mean(np.cos(yaw - raw_yaw)),
-        )
-    )
-
-    # A closed planar lap normally changes unwrapped heading by +/- 2*pi.
-    yaw_per_lap = 2.0 * np.pi * round((yaw[-1] - yaw[0]) / (2.0 * np.pi))
-    if abs(yaw_per_lap) < np.pi:
-        yaw_per_lap = float(yaw[-1] - yaw[0])
-
-    print(f"loaded {len(x)} waypoints from {waypoint_path}")
-    print(f"track length: {s[-1]:.2f} m; reference speed: {speed.min():.2f}-{speed.max():.2f} m/s")
+    selection = select_reference(config, config_path, waypoint_path, data)
+    print(f"loaded {len(selection.x)} validated waypoints from {selection.selected_source}")
     print(
-        "CSV heading-to-path-tangent offset: "
-        f"{np.rad2deg(yaw_offset):+.2f} deg; using geometric path tangent"
+        f"track length: {selection.s[-1]:.2f} m; reference speed: "
+        f"{selection.speed.min():.2f}-{selection.speed.max():.2f} m/s; "
+        f"reference={selection.selected_kind}"
     )
-    return ClosedTrack(x=x, y=y, yaw=yaw, speed=speed, s=s, yaw_per_lap=yaw_per_lap)
+    return ClosedTrack(
+        x=selection.x,
+        y=selection.y,
+        yaw=selection.yaw,
+        speed=selection.speed,
+        s=selection.s,
+        yaw_per_lap=selection.yaw_per_lap,
+    )
 
 
 def make_environment(config: dict, config_path: Path, physics_dt: float):
@@ -295,9 +261,7 @@ def main() -> None:
     )
     env = make_environment(gym_config, config_path, physics_dt)
 
-    initial_pose = np.array(
-        [[float(gym_config["sx"]), float(gym_config["sy"]), float(gym_config["stheta"])]]
-    )
+    initial_pose = np.array([[track.x[0], track.y[0], track.yaw[0]]], dtype=float)
     observation, reward, done, _ = reset_environment(env, initial_pose)
     elapsed_time = float(reward)
     yaw_tracker = ContinuousYaw()

@@ -1,0 +1,33 @@
+{
+  "map_raster_rule": "Gym-compatible grayscale > 128 is free",
+  "vehicle_length_m": 0.58,
+  "vehicle_width_m": 0.31,
+  "requested": {
+    "kind": "raceline",
+    "source": "C:\\Users\\Dr.Subhash Kumar\\f1tenth-mpc-controller\\data\\Waypoints\\Silverstone_raceline.csv",
+    "points": 11572,
+    "length_m": 446.199184103758,
+    "minimum_footprint_clearance_m": -0.054532074965106536,
+    "first_percentile_clearance_m": 0.022587925034893458,
+    "samples_below_margin": 6343,
+    "required_margin_m": 0.2,
+    "passed": false
+  },
+  "selected": {
+    "kind": "centerline",
+    "source": "C:\\Users\\Dr.Subhash Kumar\\f1tenth-mpc-controller\\data\\Waypoints\\Silverstone_centerline.csv",
+    "points": 11875,
+    "length_m": 457.87438706976235,
+    "minimum_footprint_clearance_m": 0.7760757448873192,
+    "first_percentile_clearance_m": 0.8076957371588123,
+    "samples_below_margin": 0,
+    "required_margin_m": 0.2,
+    "passed": true
+  },
+  "selected_kind": "centerline",
+  "start_pose": {
+    "x_m": 34.17329397332565,
+    "y_m": 90.53232954299749,
+    "yaw_rad": 0.12455564917162416
+  }
+}
