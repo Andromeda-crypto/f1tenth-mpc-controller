@@ -1,0 +1,33 @@
+{
+  "map_raster_rule": "Gym-compatible grayscale > 128 is free",
+  "vehicle_length_m": 0.58,
+  "vehicle_width_m": 0.31,
+  "requested": {
+    "kind": "raceline",
+    "source": "C:\\Users\\Dr.Subhash Kumar\\f1tenth-mpc-controller\\data\\Waypoints\\Nuerburgring_raceline.csv",
+    "points": 11506,
+    "length_m": 433.88834814132224,
+    "minimum_footprint_clearance_m": 0.053329993437089426,
+    "first_percentile_clearance_m": 0.15998998031126827,
+    "samples_below_margin": 4269,
+    "required_margin_m": 0.2,
+    "passed": false
+  },
+  "selected": {
+    "kind": "centerline",
+    "source": "C:\\Users\\Dr.Subhash Kumar\\f1tenth-mpc-controller\\data\\Waypoints\\Nuerburgring_centerline.csv",
+    "points": 11829,
+    "length_m": 446.05528327656697,
+    "minimum_footprint_clearance_m": 0.9125172665372815,
+    "first_percentile_clearance_m": 0.9386652269142991,
+    "samples_below_margin": 0,
+    "required_margin_m": 0.2,
+    "passed": true
+  },
+  "selected_kind": "centerline",
+  "start_pose": {
+    "x_m": -0.14436750177875235,
+    "y_m": -0.13835691824621676,
+    "yaw_rad": -2.3774508013706193
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "map_raster_rule": "Gym-compatible grayscale > 128 is free",
+  "vehicle_length_m": 0.58,
+  "vehicle_width_m": 0.31,
+  "requested": {
+    "kind": "raceline",
+    "source": "C:\\Users\\Dr.Subhash Kumar\\f1tenth-mpc-controller\\data\\Waypoints\\Monza_raceline.csv",
+    "points": 9164,
+    "length_m": 439.1667944647705,
+    "minimum_footprint_clearance_m": -0.06777618497673057,
+    "first_percentile_clearance_m": -0.06777618497673057,
+    "samples_below_margin": 5682,
+    "required_margin_m": 0.2,
+    "passed": false
+  },
+  "selected": {
+    "kind": "centerline",
+    "source": "C:\\Users\\Dr.Subhash Kumar\\f1tenth-mpc-controller\\data\\Waypoints\\Monza_centerline.csv",
+    "points": 9308,
+    "length_m": 446.03460552752307,
+    "minimum_footprint_clearance_m": 0.6990238150232695,
+    "first_percentile_clearance_m": 0.7455380347440363,
+    "samples_below_margin": 0,
+    "required_margin_m": 0.2,
+    "passed": true
+  },
+  "selected_kind": "centerline",
+  "start_pose": {
+    "x_m": 0.5057268946688899,
+    "y_m": 5.173987886483794,
+    "yaw_rad": 1.4735905410961985
+  }
+}

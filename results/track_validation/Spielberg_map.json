@@ -1,0 +1,33 @@
+{
+  "map_raster_rule": "Gym-compatible grayscale > 128 is free",
+  "vehicle_length_m": 0.58,
+  "vehicle_width_m": 0.31,
+  "requested": {
+    "kind": "raceline",
+    "source": "C:\\Users\\Dr.Subhash Kumar\\f1tenth-mpc-controller\\data\\Waypoints\\Spielberg_raceline.csv",
+    "points": 11668,
+    "length_m": 338.1267883586612,
+    "minimum_footprint_clearance_m": 0.040983909037572305,
+    "first_percentile_clearance_m": 0.0749360909624277,
+    "samples_below_margin": 6031,
+    "required_margin_m": 0.2,
+    "passed": false
+  },
+  "selected": {
+    "kind": "centerline",
+    "source": "C:\\Users\\Dr.Subhash Kumar\\f1tenth-mpc-controller\\data\\Waypoints\\Spielberg_centerline.csv",
+    "points": 11846,
+    "length_m": 343.2760248250302,
+    "minimum_footprint_clearance_m": 0.841836509394172,
+    "first_percentile_clearance_m": 0.875444156879224,
+    "samples_below_margin": 0,
+    "required_margin_m": 0.2,
+    "passed": true
+  },
+  "selected_kind": "centerline",
+  "start_pose": {
+    "x_m": -66.87345813443896,
+    "y_m": 42.30826880714842,
+    "yaw_rad": 2.3408453950707298
+  }
+}
