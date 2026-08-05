@@ -9,7 +9,7 @@
 
 A constrained linear time-varying MPC controller for F1TENTH path tracking, implemented with a persistent QP solver and benchmarked against a tuned Pure Pursuit baseline across five circuits under matched experimental conditions.
 
-**[▶ Watch the Silverstone comparison replay](results/d5/silverstone/silverstone_comparison.mp4)**
+**[▶ Watch the Silverstone comparison replay][`silverstone_comparison.mp4`](results/d5/silverstone/silverstone_comparison.mp4?raw=1)**
 
 ## Results at a Glance
 
@@ -135,11 +135,11 @@ Offline-generated from recorded multi-track telemetry (10 Hz experimental data i
 
 | Track | Replay |
 |---|---|
-| Silverstone | [`silverstone_comparison.mp4`](results/d5/silverstone/silverstone_comparison.mp4) |
-| Spielberg | [`spielberg_comparison.mp4`](results/d5/spielberg/spielberg_comparison.mp4) |
-| Monza | [`monza_comparison.mp4`](results/d5/monza/monza_comparison.mp4) |
-| Nürburgring | [`nuerburgring_comparison.mp4`](results/d5/nuerburgring/nuerburgring_comparison.mp4) |
-| Zandvoort | [`zandvoort_comparison.mp4`](results/d5/zandvoort/zandvoort_comparison.mp4) |
+| Silverstone | [`silverstone_comparison.mp4`](results/d5/silverstone/silverstone_comparison.mp4?raw=1) |
+| Spielberg | [`spielberg_comparison.mp4`](results/d5/spielberg/spielberg_comparison.mp4?raw=1) |
+| Monza | [`monza_comparison.mp4`](results/d5/monza/monza_comparison.mp4?raw=1) |
+| Nürburgring | [`nuerburgring_comparison.mp4`](results/d5/nuerburgring/nuerburgring_comparison.mp4?raw=1) |
+| Zandvoort | [`zandvoort_comparison.mp4`](results/d5/zandvoort/zandvoort_comparison.mp4?raw=1) |
 
 ## Repository Structure
 
