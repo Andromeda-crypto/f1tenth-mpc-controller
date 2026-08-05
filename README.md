@@ -9,7 +9,7 @@
 
 A constrained linear time-varying MPC controller for F1TENTH path tracking, implemented with a persistent QP solver and benchmarked against a tuned Pure Pursuit baseline across five circuits under matched experimental conditions.
 
-**[▶ Watch the Silverstone comparison replay][`silverstone_comparison.mp4`](results/d5/silverstone/silverstone_comparison.mp4?raw=1)**
+**[▶ Watch the Silverstone comparison replay](https://raw.githubusercontent.com/Andromeda-crypto/f1tenth-mpc-controller/refs/heads/main/results/d5/silverstone/silverstone_comparison.mp4)**
 
 ## Results at a Glance
 
@@ -135,11 +135,11 @@ Offline-generated from recorded multi-track telemetry (10 Hz experimental data i
 
 | Track | Replay |
 |---|---|
-| Silverstone | [`silverstone_comparison.mp4`](results/d5/silverstone/silverstone_comparison.mp4?raw=1) |
-| Spielberg | [`spielberg_comparison.mp4`](results/d5/spielberg/spielberg_comparison.mp4?raw=1) |
-| Monza | [`monza_comparison.mp4`](results/d5/monza/monza_comparison.mp4?raw=1) |
-| Nürburgring | [`nuerburgring_comparison.mp4`](results/d5/nuerburgring/nuerburgring_comparison.mp4?raw=1) |
-| Zandvoort | [`zandvoort_comparison.mp4`](results/d5/zandvoort/zandvoort_comparison.mp4?raw=1) |
+| Silverstone | [▶ Watch replay](https://raw.githubusercontent.com/Andromeda-crypto/f1tenth-mpc-controller/refs/heads/main/results/d5/silverstone/silverstone_comparison.mp4) |
+| Spielberg | [▶ Watch replay](https://raw.githubusercontent.com/Andromeda-crypto/f1tenth-mpc-controller/refs/heads/main/results/d5/spielberg/spielberg_comparison.mp4) |
+| Monza | [▶ Watch replay](https://raw.githubusercontent.com/Andromeda-crypto/f1tenth-mpc-controller/refs/heads/main/results/d5/monza/monza_comparison.mp4) |
+| Nürburgring | [▶ Watch replay](https://raw.githubusercontent.com/Andromeda-crypto/f1tenth-mpc-controller/refs/heads/main/results/d5/nuerburgring/nuerburgring_comparison.mp4) |
+| Zandvoort | [▶ Watch replay](https://raw.githubusercontent.com/Andromeda-crypto/f1tenth-mpc-controller/refs/heads/main/results/d5/zandvoort/zandvoort_comparison.mp4) |
 
 ## Repository Structure
 
