@@ -9,7 +9,7 @@
 
 A constrained linear time-varying MPC controller for F1TENTH path tracking, implemented with a persistent QP solver and benchmarked against a tuned Pure Pursuit baseline across five circuits under matched experimental conditions.
 
-**[▶ Watch the Silverstone comparison replay](https://raw.githubusercontent.com/Andromeda-crypto/f1tenth-mpc-controller/refs/heads/main/results/d5/silverstone/silverstone_comparison.mp4)**
+![MPC vs Pure Pursuit — Silverstone](results/d5/silverstone/silverstone_comparison.gif)
 
 ## Results at a Glance
 

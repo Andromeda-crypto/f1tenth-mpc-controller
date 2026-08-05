@@ -50,6 +50,7 @@ results/telemetry/
 *.mp4
 *.avi
 *.gif
+!results/d5/silverstone/silverstone_comparison.gif
 
 # dependency 
 f1tenth_gym

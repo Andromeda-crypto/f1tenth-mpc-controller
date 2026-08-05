@@ -62,6 +62,24 @@ def arguments() -> argparse.Namespace:
     parser.add_argument("--fps", type=int, default=DEFAULT_FPS)
     parser.add_argument("--width", type=int, default=DEFAULT_WIDTH)
     parser.add_argument("--height", type=int, default=DEFAULT_HEIGHT)
+    parser.add_argument(
+        "--format",
+        choices=("mp4", "gif"),
+        default="mp4",
+        help="Output format (default: mp4).",
+    )
+    parser.add_argument(
+        "--start",
+        type=float,
+        default=0.0,
+        help="Replay start time in seconds (default: 0).",
+    )
+    parser.add_argument(
+        "--duration",
+        type=float,
+        default=None,
+        help="Optional clip duration in seconds.",
+    )
     return parser.parse_args()
 
 
@@ -372,11 +390,14 @@ def render_video(
     fps: int,
     width: int,
     height: int,
+    output_format: str = "mp4",
+    start: float = 0.0,
+    clip_duration: float | None = None,
 ) -> Path:
     output_dir = OUTPUT_DIR / track_name
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_path = output_dir / f"{track_name}_comparison.mp4"
+    output_path = output_dir / f"{track_name}_comparison.{output_format}"
 
     scene = Scene(
         np.asarray(reference.x),
@@ -385,8 +406,20 @@ def render_video(
         height,
     )
 
-    duration = max(mpc.duration, pp.duration)
-    frame_count = int(np.ceil(duration * fps)) + 1
+    replay_duration = max(mpc.duration, pp.duration)
+    if start < 0.0 or start >= replay_duration:
+        raise ValueError(
+            f"--start must be in [0, {replay_duration:.3f})"
+        )
+
+    end = replay_duration
+    if clip_duration is not None:
+        if clip_duration <= 0.0:
+            raise ValueError("--duration must be positive")
+        end = min(start + clip_duration, replay_duration)
+
+    rendered_duration = end - start
+    frame_count = int(np.ceil(rendered_duration * fps)) + 1
 
     mpc_trail: list[tuple[int, int]] = []
     pp_trail: list[tuple[int, int]] = []
@@ -394,27 +427,37 @@ def render_video(
     max_trail_frames = fps * 4
 
     print(
-        f"Rendering {duration:.2f}s at {fps} FPS "
-        f"({frame_count} frames)..."
+        f"Rendering {start:.2f}-{end:.2f}s at {fps} FPS "
+        f"to {output_format.upper()} ({frame_count} frames)..."
     )
 
-    writer = imageio.get_writer(
-        output_path,
-        fps=fps,
-        codec="libx264",
-        quality=8,
-        macro_block_size=2,
-        ffmpeg_params=[
-            "-pix_fmt",
-            "yuv420p",
-            "-movflags",
-            "+faststart",
-        ],
-    )
+    if output_format == "mp4":
+        writer = imageio.get_writer(
+            output_path,
+            fps=fps,
+            codec="libx264",
+            quality=8,
+            macro_block_size=2,
+            ffmpeg_params=[
+                "-pix_fmt",
+                "yuv420p",
+                "-movflags",
+                "+faststart",
+            ],
+        )
+    else:
+        # GIF is intentionally used only for short README previews.
+        # ImageIO expresses per-frame GIF duration in seconds.
+        writer = imageio.get_writer(
+            output_path,
+            mode="I",
+            duration=1.0 / fps,
+            loop=0,
+        )
 
     try:
         for frame_index in range(frame_count):
-            t = min(frame_index / fps, duration)
+            t = min(start + frame_index / fps, end)
 
             mpc_state = interpolate(mpc, t)
             pp_state = interpolate(pp, t)
@@ -534,10 +577,13 @@ def main() -> None:
         fps=args.fps,
         width=args.width,
         height=args.height,
+        output_format=args.format,
+        start=args.start,
+        clip_duration=args.duration,
     )
 
     print(f"\nD5 complete.")
-    print(f"Video: {output}")
+    print(f"Replay: {output}")
 
 
 if __name__ == "__main__":
